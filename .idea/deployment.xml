@@ -5,7 +5,7 @@
       <paths name="AWS">
         <serverdata>
           <mappings>
-            <mapping deploy="/home/sampocs/Forex-CNN/" local="$PROJECT_DIR$" web="/" />
+            <mapping deploy="/Forex-CNN/" local="$PROJECT_DIR$" web="/" />
           </mappings>
         </serverdata>
       </paths>
