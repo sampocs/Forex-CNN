@@ -1,0 +1,4 @@
+RAW INPUT
+	Linear Regression
+		RMSE = 139.799332181
+		R2 Score = 0.585434267498
