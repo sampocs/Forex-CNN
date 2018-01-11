@@ -23,7 +23,7 @@ learning_rate = 0.001
 epoch_len = 3000
 num_epochs = 100
 
-def get_batch(data):
+def get_batch(data, batch_size=batch_size):
 	x, y = data
 	batch_x = np.empty((batch_size, x.shape[1], x.shape[2], 1))
 	batch_y = np.empty((batch_size, num_classes))
@@ -159,7 +159,8 @@ with tf.Session() as sess:
 				if i == 1 or i % 2 == 0:
 					eval_time = time.time()
 					train_eval = time.time()
-					summary, train_acc = sess.run([merged, accuracy], feed_dict= { x: x_train, y_: y_train })
+					x_train_batch, y_train_batch = get_batch(train, 50000)
+					summary, train_acc = sess.run([merged, accuracy], feed_dict= { x: x_train_batch, y_: y_train_batch })
 					train_writer.add_summary(summary, i)
 					print "train eval time: ", time.time() - train_eval
 					val_time = time.time()
@@ -171,7 +172,7 @@ with tf.Session() as sess:
 				else:
 					summary, batch_loss = sess.run([merged, loss], feed_dict={ x: batch_x, y_: batch_y})
 					summary, train_writer.add_summary(summary, i)
-					print "Epoch: {}, Loss: {}, Batch Acc: {}".format(i, batch_loss, batch_acc)
+					print "Epoch: {}, Loss: {}, Batch Acc: {}".format(i, batch_loss)
 			else:
 				_ = sess.run([train_step], feed_dict={ x: batch_x, y_: batch_y })
 
