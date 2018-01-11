@@ -172,7 +172,7 @@ with tf.Session() as sess:
 				else:
 					summary, batch_loss = sess.run([merged, loss], feed_dict={ x: batch_x, y_: batch_y})
 					summary, train_writer.add_summary(summary, i)
-					print "Epoch: {}, Loss: {}, Batch Acc: {}".format(i, batch_loss)
+					print "Epoch: {}, Loss: {}".format(i, batch_loss)
 			else:
 				_ = sess.run([train_step], feed_dict={ x: batch_x, y_: batch_y })
 
