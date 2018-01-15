@@ -175,4 +175,5 @@ for _ in range(100):
 					_ = sess.run([train_step], feed_dict={ x: batch_x, y_: batch_y, lr: learn_r })
 
 #tensorboard --logdir /tmp/forex_cnn/
-
+with open ('done.txt', 'w') as w_file:
+	w_file.write('done')
