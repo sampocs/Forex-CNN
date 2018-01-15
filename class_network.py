@@ -168,7 +168,7 @@ for _ in range(100):
 					print "Epoch: {}, Loss: {}, Train Acc: {}, Val Acc: {}".format(i, train_loss, train_acc, val_acc)
 
 					with open("tuning.txt", 'w') as w_file:
-						tuning += "Learning Rate: {}, Epoch: {}, Loss: {}, Train Acc: {}, Val Acc: {}\n".format(learning_rate, i, train_loss, train_acc, val_acc)
+						tuning += "Learning Rate: {}, Epoch: {}, Loss: {}, Train Acc: {}, Val Acc: {}\n".format(learn_r, i, train_loss, train_acc, val_acc)
 						w_file.write(tuning)
 						
 				else:
