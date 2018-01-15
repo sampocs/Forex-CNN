@@ -21,7 +21,7 @@ num_fc = 128
 flat_nodes = 3200
 #learning_rate = 0.001
 epoch_len = 3000
-num_epochs = 100
+num_epochs = 10
 
 def get_batch(data, batch_size=batch_size):
 	x, y = data
@@ -165,11 +165,11 @@ for _ in range(100):
 					summary, val_acc = sess.run([merged, accuracy], feed_dict={ x: x_val, y_: y_val, lr: learn_r })
 					val_writer.add_summary(summary, i)
 
-					print "Epoch: {}, Loss: {}, Train Acc: {}, Val Acc: {}".format(i, train_loss, train_acc, val_acc)
-
-					with open("tuning.txt", 'w') as w_file:
-						tuning += "Learning Rate: {}, Epoch: {}, Loss: {}, Train Acc: {}, Val Acc: {}\n".format(learn_r, i, train_loss, train_acc, val_acc)
-						w_file.write(tuning)
+					#print "Epoch: {}, Loss: {}, Train Acc: {}, Val Acc: {}".format(i, train_loss, train_acc, val_acc)
+					if i % 2 == 0:
+						with open("tuning.txt", 'w') as w_file:
+							tuning += "Learning Rate: {}, Epoch: {}, Loss: {}, Train Acc: {}, Val Acc: {}\n".format(learn_r, i, train_loss, train_acc, val_acc)
+							w_file.write(tuning)
 						
 				else:
 					_ = sess.run([train_step], feed_dict={ x: batch_x, y_: batch_y, lr: learn_r })
