@@ -21,7 +21,7 @@ num_fc = 128
 flat_nodes = 3200
 learning_rate = 0.000889
 epoch_len = 3000
-num_epochs = 10
+num_epochs = 100
 
 def get_batch(data, batch_size=batch_size):
 	x, y = data
