@@ -135,7 +135,7 @@ tf.summary.scalar("Accuracy", accuracy)
 
 tuning = ''
 for _ in range(100):
-	learn_r = 10 ** uniform(-6, -2)
+	learn_r = 10 ** uniform(-2, -4)
 	print "Learning Rate: {}".format(learn_r)
 	with tf.Session() as sess:
 		train_writer = tf.summary.FileWriter("/tmp/forex_cnn/train", sess.graph)
@@ -173,7 +173,9 @@ for _ in range(100):
 						
 				else:
 					_ = sess.run([train_step], feed_dict={ x: batch_x, y_: batch_y, lr: learn_r })
-
+	tuning += "\n"
+	with open("tuning.txt", 'w') as w_file:
+		w_file.write(tuning)
 #tensorboard --logdir /tmp/forex_cnn/
 with open ('done.txt', 'w') as w_file:
 	w_file.write('done')
