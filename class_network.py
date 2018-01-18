@@ -19,7 +19,7 @@ batch_size = 16
 num_classes = 3
 num_fc = 128
 flat_nodes = 3200
-learning_rate = 0.0009
+learning_rate = 0.000889
 epoch_len = 3000
 num_epochs = 10
 
