@@ -19,7 +19,7 @@ batch_size = 16
 num_classes = 3
 num_fc = 128
 flat_nodes = 3200
-#learning_rate = 0.001
+learning_rate = 0.0009
 epoch_len = 3000
 num_epochs = 10
 
@@ -133,49 +133,36 @@ tf.summary.scalar("Accuracy", accuracy)
 #tf.summary.scalar("Precision", precision)
 #tf.summary.scalar("Recall", recall)
 
-tuning = ''
-for _ in range(100):
-	learn_r = 10 ** uniform(-2, -4)
-	print "Learning Rate: {}".format(learn_r)
-	with tf.Session() as sess:
-		train_writer = tf.summary.FileWriter("/tmp/forex_cnn/train", sess.graph)
-		val_writer = tf.summary.FileWriter("/tmp/forex_cnn/val")
-		merged = tf.summary.merge_all()
+with tf.Session() as sess:
+	train_writer = tf.summary.FileWriter("/tmp/forex_cnn/train", sess.graph)
+	val_writer = tf.summary.FileWriter("/tmp/forex_cnn/val")
+	merged = tf.summary.merge_all()
 
-		sess.run(tf.global_variables_initializer())
+	sess.run(tf.global_variables_initializer())
 
-		for i in range(1, num_epochs + 1):
-			for j in range(1, epoch_len + 1):
+	for i in range(1, num_epochs + 1):
+		for j in range(1, epoch_len + 1):
 
-				batch_x, batch_y = get_batch(train)
+			batch_x, batch_y = get_batch(train)
 
 				#Report loss at every 1000th iteration
-				if j % 1000 == 0 and j != epoch_len:
-					pass
-					#batch_loss, _ = sess.run([loss, train_step],
-					#							feed_dict={ x: batch_x, y_: batch_y, lr: learn_r })
-					#print "Iteration {}/{} for Epoch {}, Loss: {}".format(j, epoch_len, i, batch_loss)
+			if j % 1000 == 0 and j != epoch_len:
+				batch_loss, _ = sess.run([loss, train_step],
+												feed_dict={ x: batch_x, y_: batch_y, lr: learn_r })
+				print "Iteration {}/{} for Epoch {}, Loss: {}".format(j, epoch_len, i, batch_loss)
 				
-				#Report batch accuracy after each epoch
-				elif j == epoch_len:
-					x_train_batch, y_train_batch = get_batch(train, 50000)
-					summary, train_acc, train_loss = sess.run([merged, accuracy, loss], feed_dict= { x: x_train_batch, y_: y_train_batch, lr: learn_r })
-					train_writer.add_summary(summary, i)
+			#Report batch accuracy after each epoch
+			elif j == epoch_len:
+				x_train_batch, y_train_batch = get_batch(train, 50000)
+				summary, train_acc, train_loss = sess.run([merged, accuracy, loss], feed_dict= { x: x_train_batch, y_: y_train_batch, lr: learn_r })
+				train_writer.add_summary(summary, i)
 
-					summary, val_acc = sess.run([merged, accuracy], feed_dict={ x: x_val, y_: y_val, lr: learn_r })
-					val_writer.add_summary(summary, i)
+				summary, val_acc = sess.run([merged, accuracy], feed_dict={ x: x_val, y_: y_val, lr: learn_r })
+				val_writer.add_summary(summary, i)
 
-					#print "Epoch: {}, Loss: {}, Train Acc: {}, Val Acc: {}".format(i, train_loss, train_acc, val_acc)
-					if i % 2 == 0:
-						with open("tuning.txt", 'w') as w_file:
-							tuning += "Learning Rate: {}, Epoch: {}, Loss: {}, Train Acc: {}, Val Acc: {}\n".format(learn_r, i, train_loss, train_acc, val_acc)
-							w_file.write(tuning)
+				print "Epoch: {}, Loss: {}, Train Acc: {}, Val Acc: {}".format(i, train_loss, train_acc, val_acc)
 						
-				else:
-					_ = sess.run([train_step], feed_dict={ x: batch_x, y_: batch_y, lr: learn_r })
-	tuning += "\n"
-	with open("tuning.txt", 'w') as w_file:
-		w_file.write(tuning)
+			else:
+				_ = sess.run([train_step], feed_dict={ x: batch_x, y_: batch_y, lr: learn_r })
+
 #tensorboard --logdir /tmp/forex_cnn/
-with open ('done.txt', 'w') as w_file:
-	w_file.write('done')
