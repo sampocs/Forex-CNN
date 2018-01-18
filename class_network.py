@@ -107,8 +107,7 @@ y = tf.add(tf.matmul(l5_prime, W_fc2), b_fc2, name="y")
 #Loss: Softmax -> cross entropy loss -> average -> ADAM Optimizer
 with tf.name_scope("loss"):
 	loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels=y_, logits=y))
-lr = tf.placeholder(tf.float32)
-optimizer = tf.train.AdamOptimizer(learning_rate=lr)
+optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate)
 train_step = optimizer.minimize(loss)
 
 #Accuracy
@@ -148,21 +147,21 @@ with tf.Session() as sess:
 				#Report loss at every 1000th iteration
 			if j % 1000 == 0 and j != epoch_len:
 				batch_loss, _ = sess.run([loss, train_step],
-												feed_dict={ x: batch_x, y_: batch_y, lr: learn_r })
+												feed_dict={ x: batch_x, y_: batch_y })
 				print "Iteration {}/{} for Epoch {}, Loss: {}".format(j, epoch_len, i, batch_loss)
 				
 			#Report batch accuracy after each epoch
 			elif j == epoch_len:
 				x_train_batch, y_train_batch = get_batch(train, 50000)
-				summary, train_acc, train_loss = sess.run([merged, accuracy, loss], feed_dict= { x: x_train_batch, y_: y_train_batch, lr: learn_r })
+				summary, train_acc, train_loss = sess.run([merged, accuracy, loss], feed_dict= { x: x_train_batch, y_: y_train_batch })
 				train_writer.add_summary(summary, i)
 
-				summary, val_acc = sess.run([merged, accuracy], feed_dict={ x: x_val, y_: y_val, lr: learn_r })
+				summary, val_acc = sess.run([merged, accuracy], feed_dict={ x: x_val, y_: y_val })
 				val_writer.add_summary(summary, i)
 
 				print "Epoch: {}, Loss: {}, Train Acc: {}, Val Acc: {}".format(i, train_loss, train_acc, val_acc)
 						
 			else:
-				_ = sess.run([train_step], feed_dict={ x: batch_x, y_: batch_y, lr: learn_r })
+				_ = sess.run([train_step], feed_dict={ x: batch_x, y_: batch_y })
 
 #tensorboard --logdir /tmp/forex_cnn/
