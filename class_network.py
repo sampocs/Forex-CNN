@@ -163,7 +163,7 @@ with tf.Session() as sess:
 
 				print "Epoch: {}, Loss: {}, Train Acc: {}, Val Acc: {}".format(i, train_loss, train_acc, val_acc)
 
-				loss_collection[i] = {'loss': train_loss, 'train_acc': train_acc, 'val_acc': val_acc}
+				loss_collection[i] = {'loss': str(train_loss), 'train_acc': str(train_acc), 'val_acc': str(val_acc)}
 					
 			else:
 				_ = sess.run([train_step], feed_dict={ x: batch_x, y_: batch_y })
