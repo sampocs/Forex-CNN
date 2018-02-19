@@ -82,22 +82,24 @@ l1_conv = conv2d(x, W_conv1) + b_conv1
 l1_bn = tf.layers.batch_normalization(l1_conv)
 l1_prime = tf.nn.relu(l1_bn)
 
-#Layer 2: Convolution -> batch normalization -> relu -> max pooling
+#Layer 2: Convolution -> batch normalization -> relu -> dropout -> max pooling
 l2_conv = conv2d(l1_prime, W_conv2) + b_conv2
 l2_bn = tf.layers.batch_normalization(l2_conv)
 l2_prime = tf.nn.relu(l2_bn)
-l2_pool = max_pool(l2_prime, 2)
+l2_drop = tf.nn.dropout(l2_prime, 0.3)
+l2_pool = max_pool(l2_drop, 2)
 
 #Layer 3: Convolution -> batch normalization -> relu
 l3_conv = conv2d(l2_pool, W_conv3) + b_conv3
 l3_bn = tf.layers.batch_normalization(l3_conv)
 l3_prime = tf.nn.relu(l3_bn)
 
-#Layer 4: Convolution -> batch normalization -> relu -> max pooling
+#Layer 4: Convolution -> batch normalization -> relu -> dropout -> max pooling
 l4_conv = conv2d(l3_prime, W_conv4) + b_conv4
 l4_bn = tf.layers.batch_normalization(l4_conv)
 l4_prime = tf.nn.relu(l4_bn)
-l4_pool = max_pool(l4_prime, 2)
+l4_drop = tf.nn.dropout(l4_prime, 0.3)
+l4_pool = max_pool(l4_drop, 2)
 
 #Layer 5: Flatten -> fully connected -> relu -> fully connected
 l5_flat = tf.reshape(l4_pool, [-1, flat_nodes])
