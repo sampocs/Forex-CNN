@@ -22,7 +22,7 @@ num_fc = 128
 flat_nodes = 3200
 learning_rate = 0.00085
 epoch_len = 3000
-num_epochs = 2
+num_epochs = 20
 
 def get_batch(data, batch_size=batch_size):
 	x, y = data
@@ -133,7 +133,6 @@ tf.summary.scalar("Accuracy", accuracy)
 #tf.summary.scalar("Precision", precision)
 #tf.summary.scalar("Recall", recall)
 
-loss_collection = {}
 with tf.Session() as sess:
 	train_writer = tf.summary.FileWriter("/tmp/forex_cnn/train", sess.graph)
 	val_writer = tf.summary.FileWriter("/tmp/forex_cnn/val")
@@ -162,12 +161,8 @@ with tf.Session() as sess:
 				val_writer.add_summary(summary, i)
 
 				print "Epoch: {}, Loss: {}, Train Acc: {}, Val Acc: {}".format(i, train_loss, train_acc, val_acc)
-
-				loss_collection[i] = {'loss': str(train_loss), 'train_acc': str(train_acc), 'val_acc': str(val_acc)}
 					
 			else:
 				_ = sess.run([train_step], feed_dict={ x: batch_x, y_: batch_y })
 
-with open("loss_collection.json", 'w') as json_file:
-	json.dump(loss_collection, json_file)
 #tensorboard --logdir /tmp/forex_cnn/
