@@ -23,6 +23,7 @@ flat_nodes = 3200
 learning_rate = 0.000905131031964
 epoch_len = 3000
 num_epochs = 20
+keep_prob = 0.7
 
 def get_batch(data, batch_size=batch_size):
 	x, y = data
@@ -86,7 +87,7 @@ l1_prime = tf.nn.relu(l1_bn)
 l2_conv = conv2d(l1_prime, W_conv2) + b_conv2
 l2_bn = tf.layers.batch_normalization(l2_conv)
 l2_prime = tf.nn.relu(l2_bn)
-l2_drop = tf.nn.dropout(l2_prime, 0.3)
+l2_drop = tf.nn.dropout(l2_prime, keep_prob)
 l2_pool = max_pool(l2_drop, 2)
 
 #Layer 3: Convolution -> batch normalization -> relu
@@ -98,7 +99,7 @@ l3_prime = tf.nn.relu(l3_bn)
 l4_conv = conv2d(l3_prime, W_conv4) + b_conv4
 l4_bn = tf.layers.batch_normalization(l4_conv)
 l4_prime = tf.nn.relu(l4_bn)
-l4_drop = tf.nn.dropout(l4_prime, 0.3)
+l4_drop = tf.nn.dropout(l4_prime, keep_prob)
 l4_pool = max_pool(l4_drop, 2)
 
 #Layer 5: Flatten -> fully connected -> relu -> fully connected
@@ -134,6 +135,8 @@ tf.summary.scalar("Loss", loss)
 tf.summary.scalar("Accuracy", accuracy)
 #tf.summary.scalar("Precision", precision)
 #tf.summary.scalar("Recall", recall)
+
+saver = tf.train.Saver()
 
 with tf.Session() as sess:
 	train_writer = tf.summary.FileWriter("/tmp/forex_cnn/train", sess.graph)

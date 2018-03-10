@@ -88,7 +88,7 @@ def gen_raw_class(one_hot=False, cnn_shape=False):
 
 
 """Input is 100 previous prices, label is 101th closeMid price"""
-def gen_raw_reg():
+def gen_raw_reg(cnn_shape=False):
 	#train, val, test
 	sets = []
 	for set_type in [raw_train, raw_val, raw_test]:
@@ -111,8 +111,18 @@ def gen_raw_reg():
 		group = np.array(zip(x, y))
 		np.random.shuffle(group)
 		x, y = zip(*list(group))
-		y = np.reshape(np.array(list(y)), (-1,))
-		sets.append((np.array(list(x)), y))
+
+		x = np.array(list(x))
+		y = np.array(list(y))
+
+		if cnn_shape:
+			x = np.reshape(x, [x.shape[0], x.shape[1], x.shape[2], 1])
+			y = np.reshape(y, [y.shape[0], 1])
+		else:
+			y = np.reshape(y, (-1,))
+
+
+		sets.append((x, y))
 
 	return sets
 
