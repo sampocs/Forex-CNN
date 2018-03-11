@@ -16,11 +16,11 @@ x_test, y_test = test
 x_dim = (x_train.shape[1], x_train.shape[2])
 
 #Config
-batch_size = 16
+batch_size = 32
 num_classes = 3
 num_fc = 128
 flat_nodes = 3200
-learning_rate = 0.000905131031964
+learning_rate = 0.000905#131031964
 epoch_len = 3000
 num_epochs = 20
 keep_prob = 0.7
@@ -59,6 +59,8 @@ def max_pool(x, size):
 x = tf.placeholder(tf.float32, shape=[None, x_dim[0], x_dim[1], 1], name='x')
 #Y-dim: batch, one-hot class (sell, hold, buy) 
 y_ = tf.placeholder(tf.float32, shape=[None, num_classes], name='y')
+#Keep probablility for dropout
+kp = tf.placeholder(tf.float32, name='kp')
 
 #WEIGHTS/BIAS
 W_conv1 = conv_weights([4, 40, 1, 16], 'W_conv1')
@@ -87,7 +89,7 @@ l1_prime = tf.nn.relu(l1_bn)
 l2_conv = conv2d(l1_prime, W_conv2) + b_conv2
 l2_bn = tf.layers.batch_normalization(l2_conv)
 l2_prime = tf.nn.relu(l2_bn)
-l2_drop = tf.nn.dropout(l2_prime, keep_prob)
+l2_drop = tf.nn.dropout(l2_prime, kp)
 l2_pool = max_pool(l2_drop, 2)
 
 #Layer 3: Convolution -> batch normalization -> relu
@@ -99,7 +101,7 @@ l3_prime = tf.nn.relu(l3_bn)
 l4_conv = conv2d(l3_prime, W_conv4) + b_conv4
 l4_bn = tf.layers.batch_normalization(l4_conv)
 l4_prime = tf.nn.relu(l4_bn)
-l4_drop = tf.nn.dropout(l4_prime, keep_prob)
+l4_drop = tf.nn.dropout(l4_prime, kp)
 l4_pool = max_pool(l4_drop, 2)
 
 #Layer 5: Flatten -> fully connected -> relu -> fully connected
@@ -153,16 +155,17 @@ with tf.Session() as sess:
 				#Report loss at every 1000th iteration
 			if j % 1000 == 0 and j != epoch_len:
 				batch_loss, _ = sess.run([loss, train_step],
-												feed_dict={ x: batch_x, y_: batch_y })
+												feed_dict={ x: batch_x, y_: batch_y, kp: keep_prob })
 				print "Iteration {}/{} for Epoch {}, Loss: {}".format(j, epoch_len, i, batch_loss)
 				
 			#Report batch accuracy after each epoch
 			elif j == epoch_len:
 				x_train_batch, y_train_batch = get_batch(train, 50000)
-				summary, train_acc, train_loss = sess.run([merged, accuracy, loss], feed_dict= { x: x_train_batch, y_: y_train_batch })
+				summary, train_acc, train_loss = sess.run([merged, accuracy, loss], 
+										feed_dict= { x: x_train_batch, y_: y_train_batch, kp: keep_prob})
 				train_writer.add_summary(summary, i)
 
-				summary, val_acc = sess.run([merged, accuracy], feed_dict={ x: x_val, y_: y_val })
+				summary, val_acc = sess.run([merged, accuracy], feed_dict={ x: x_val, y_: y_val, kp: 1.0})
 				val_writer.add_summary(summary, i)
 
 				print "Epoch: {}, Loss: {}, Train Acc: {}, Val Acc: {}".format(i, train_loss, train_acc, val_acc)
