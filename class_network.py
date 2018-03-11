@@ -171,6 +171,6 @@ with tf.Session() as sess:
 				print "Epoch: {}, Loss: {}, Train Acc: {}, Val Acc: {}".format(i, train_loss, train_acc, val_acc)
 					
 			else:
-				_ = sess.run([train_step], feed_dict={ x: batch_x, y_: batch_y })
+				_ = sess.run([train_step], feed_dict={ x: batch_x, y_: batch_y, kp: keep_prob })
 
 #tensorboard --logdir /tmp/forex_cnn/
