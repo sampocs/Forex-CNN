@@ -21,9 +21,10 @@ num_classes = 3
 num_fc = 128
 flat_nodes = 3200
 learning_rate = 0.000905#131031964
+lamda = 0.001
 epoch_len = 3000
 num_epochs = 100
-keep_prob = 0.7
+keep_prob = 0.5
 
 def get_batch(data, batch_size=batch_size):
 	x, y = data
@@ -112,7 +113,10 @@ y = tf.add(tf.matmul(l5_prime, W_fc2), b_fc2, name="y")
 
 #Loss: Softmax -> cross entropy loss -> average -> ADAM Optimizer
 with tf.name_scope("loss"):
-	loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels=y_, logits=y))
+	cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels=y_, logits=y))
+	regularizer = tf.nn.l2_loss(W_conv1) +  tf.nn.l2_loss(W_conv2) + tf.nn.l2_loss(W_conv3) 
+					+ tf.nn.l2_loss(W_conv4) + tf.nn.l2_loss(W_fc1) + tf.nn.l2_loss(W_fc2)
+	loss = tf.reduce_mean(cost + lamda*regularizer)
 optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate)
 train_step = optimizer.minimize(loss)
 
