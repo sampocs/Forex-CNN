@@ -22,7 +22,7 @@ num_fc = 128
 flat_nodes = 3200
 learning_rate = 0.000905#131031964
 epoch_len = 3000
-num_epochs = 20
+num_epochs = 100
 keep_prob = 0.7
 
 def get_batch(data, batch_size=batch_size):
@@ -120,8 +120,8 @@ train_step = optimizer.minimize(loss)
 with tf.name_scope("metrics"):
 	correct_predicition = tf.equal(tf.argmax(y, 1), tf.argmax(y_, 1))
 	accuracy = tf.reduce_mean(tf.cast(correct_predicition, tf.float32))
-	#precision = tf.metrics.precision(y_, y)
-	#recall = tf.metrics.recall(y_, y)
+	precision, pre_op = tf.metrics.precision(y_, y)
+	recall, rec_op = tf.metrics.recall(y_, y)
 
 #Tensorboard 
 #Store histograms
@@ -135,8 +135,8 @@ tf.summary.histogram("fc_2", W_fc2)
 #Loss/Accuracy/Precision/Recall
 tf.summary.scalar("Loss", loss)
 tf.summary.scalar("Accuracy", accuracy)
-#tf.summary.scalar("Precision", precision)
-#tf.summary.scalar("Recall", recall)
+tf.summary.scalar("Precision", precision)
+tf.summary.scalar("Recall", recall)
 
 saver = tf.train.Saver()
 
@@ -146,6 +146,7 @@ with tf.Session() as sess:
 	merged = tf.summary.merge_all()
 
 	sess.run(tf.global_variables_initializer())
+	sess.run(tf.local_variables_initializer())
 
 	for i in range(1, num_epochs + 1):
 		for j in range(1, epoch_len + 1):
@@ -173,4 +174,6 @@ with tf.Session() as sess:
 			else:
 				_ = sess.run([train_step], feed_dict={ x: batch_x, y_: batch_y, kp: keep_prob })
 
+	summary, test_acc, prec, rec = sess.run([merged, accuracy, precision, recall], feed_dict={x: x_test, y_: y_test, kp: 1.0})
+	print "Test Results:\nAccuracy: {}, Precison: {}, Recall: {}".format(test_acc, prec, rec)
 #tensorboard --logdir /tmp/forex_cnn/
