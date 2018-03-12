@@ -81,28 +81,28 @@ b_fc2 = bias([num_classes], 'b_fc2')
 
 
 #BUILD
-#Layer 1: Convolution -> batch normalization -> relu 
+#Layer 1: Convolution -> relu -> batch normalization
 l1_conv = conv2d(x, W_conv1) + b_conv1
-l1_bn = tf.layers.batch_normalization(l1_conv)
-l1_prime = tf.nn.relu(l1_bn)
+l1_prime = tf.nn.relu(l1_conv)
+l1_bn = tf.layers.batch_normalization(l1_prime)
 
-#Layer 2: Convolution -> batch normalization -> relu -> dropout -> max pooling
-l2_conv = conv2d(l1_prime, W_conv2) + b_conv2
-l2_bn = tf.layers.batch_normalization(l2_conv)
-l2_prime = tf.nn.relu(l2_bn)
-l2_drop = tf.nn.dropout(l2_prime, kp)
+#Layer 2: Convolution -> relu -> batch normalization -> dropout -> max pooling
+l2_conv = conv2d(l1_bn, W_conv2) + b_conv2
+l2_prime = tf.nn.relu(l2_conv)
+l2_bn = tf.layers.batch_normalization(l2_prime)
+l2_drop = tf.nn.dropout(l2_bn, kp)
 l2_pool = max_pool(l2_drop, 2)
 
-#Layer 3: Convolution -> batch normalization -> relu
+#Layer 3: Convolution -> relu -> batch normalization
 l3_conv = conv2d(l2_pool, W_conv3) + b_conv3
-l3_bn = tf.layers.batch_normalization(l3_conv)
-l3_prime = tf.nn.relu(l3_bn)
+l3_prime = tf.nn.relu(l3_conv)
+l3_bn = tf.layers.batch_normalization(l3_prime)
 
-#Layer 4: Convolution -> batch normalization -> relu -> dropout -> max pooling
+#Layer 4: Convolution -> relu -> batch normalization -> dropout -> max pooling
 l4_conv = conv2d(l3_prime, W_conv4) + b_conv4
-l4_bn = tf.layers.batch_normalization(l4_conv)
-l4_prime = tf.nn.relu(l4_bn)
-l4_drop = tf.nn.dropout(l4_prime, kp)
+l4_prime = tf.nn.relu(l4_conv)
+l4_bn = tf.layers.batch_normalization(l4_prime)
+l4_drop = tf.nn.dropout(l4_bn, kp)
 l4_pool = max_pool(l4_drop, 2)
 
 #Layer 5: Flatten -> fully connected -> relu -> fully connected
@@ -114,7 +114,7 @@ y = tf.add(tf.matmul(l5_prime, W_fc2), b_fc2, name="y")
 #Loss: Softmax -> cross entropy loss -> average -> ADAM Optimizer
 with tf.name_scope("loss"):
 	cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels=y_, logits=y))
-	regularizer = tf.nn.l2_loss(W_conv1) +  tf.nn.l2_loss(W_conv2) + tf.nn.l2_loss(W_conv3) 
+	regularizer = tf.nn.l2_loss(W_conv1) +  tf.nn.l2_loss(W_conv2) + tf.nn.l2_loss(W_conv3) \
 					+ tf.nn.l2_loss(W_conv4) + tf.nn.l2_loss(W_fc1) + tf.nn.l2_loss(W_fc2)
 	loss = tf.reduce_mean(cost + lamda*regularizer)
 optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate)
